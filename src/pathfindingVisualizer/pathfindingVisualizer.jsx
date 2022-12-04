@@ -54,10 +54,10 @@ class PathfindingVisualizer extends Component {
     generatingMaze: false,
     width: window.innerWidth,
     height: window.innerHeight,
-    numRows: initialNumRows,
-    numColumns: initialNumColumns,
-    speed: 10,
-    mazeSpeed: 10,
+    numRows: 64,
+    numColumns: 64,
+    speed: 0,
+    mazeSpeed: 0,
   };
 
   updateDimensions = () => {
@@ -279,20 +279,26 @@ class PathfindingVisualizer extends Component {
   }
 
   visualizeAStar() {
-    if (this.state.visualizingAlgorithm || this.state.generatingMaze) {
-      return;
+    for(var trial = 0; trial <1 ; trial++){
+      if (this.state.visualizingAlgorithm || this.state.generatingMaze) {
+        return;
+      }
+      this.setState({ visualizingAlgorithm: true });
+      //setTimeout(() => {
+        const start = performance.now();
+        const { grid } = this.state;
+        const startNode = grid[startNodeRow][startNodeCol];
+        const finishNode = grid[finishNodeRow][finishNodeCol];
+        const visitedNodesInOrder = astar(grid, startNode, finishNode);
+        const nodesInShortestPathOrder = getNodesInShortestPathOrderAstar(
+          finishNode
+        );
+        const end = performance.now();
+        console.log(`Call to doSomething took ${end - start} milliseconds.`);
+        this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
+      //}, this.state.speed);
     }
-    this.setState({ visualizingAlgorithm: true });
-    setTimeout(() => {
-      const { grid } = this.state;
-      const startNode = grid[startNodeRow][startNodeCol];
-      const finishNode = grid[finishNodeRow][finishNodeCol];
-      const visitedNodesInOrder = astar(grid, startNode, finishNode);
-      const nodesInShortestPathOrder = getNodesInShortestPathOrderAstar(
-        finishNode
-      );
-      this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
-    }, this.state.speed);
+    
   }
 
   visualizeBFS() {
