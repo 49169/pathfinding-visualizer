@@ -36,6 +36,9 @@ import { recursiveDivisionMaze } from "../mazeAlgorithms/recursiveDivision";
 import { verticalMaze } from "../mazeAlgorithms/verticalMaze";
 import { horizontalMaze } from "../mazeAlgorithms/horizontalMaze";
 
+const Benchmark = require('benchmark');
+const suite = new Benchmark.Suite('A-Start Test');
+
 const initialNum = getInitialNum(window.innerWidth, window.innerHeight);
 const initialNumRows = initialNum[0];
 const initialNumColumns = initialNum[1];
@@ -151,15 +154,15 @@ class PathfindingVisualizer extends Component {
             visitedNodesInOrder
           );
           this.setState({ grid: newGrid, visualizingAlgorithm: false });
-        }, i * (3 * this.state.speed));
+        }, 0);
         return;
       }
       let node = nodesInShortestPathOrder[i];
-      setTimeout(() => {
+      //setTimeout(() => {
         //shortest path node
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          "node node-shortest-path";
-      }, i * (3 * this.state.speed));
+        //document.getElementById(`node-${node.row}-${node.col}`).className =
+        //  "node node-shortest-path";
+      //}, 0);
     }
   };
 
@@ -183,14 +186,14 @@ class PathfindingVisualizer extends Component {
             nodesInShortestPathOrder,
             visitedNodesInOrder
           );
-        }, i * this.state.speed);
+        }, 0);
         return;
       }
-      setTimeout(() => {
+      //setTimeout(() => {
         //visited node
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          "node node-visited";
-      }, i * this.state.speed);
+      // document.getElementById(`node-${node.row}-${node.col}`).className =
+      //    "node node-visited";
+      //}, 0);
     }
   };
 
@@ -279,28 +282,51 @@ class PathfindingVisualizer extends Component {
   }
 
   visualizeAStar() {
-    for(var trial = 0; trial <1 ; trial++){
+    let time = 0;
+    const { grid } = this.state;
+        const startNode = grid[startNodeRow][startNodeCol];
+        const finishNode = grid[finishNodeRow][finishNodeCol];
+    for(var trial = 0; trial <100 ; trial++){
       if (this.state.visualizingAlgorithm || this.state.generatingMaze) {
         return;
       }
       this.setState({ visualizingAlgorithm: true });
       //setTimeout(() => {
         const start = performance.now();
-        const { grid } = this.state;
-        const startNode = grid[startNodeRow][startNodeCol];
-        const finishNode = grid[finishNodeRow][finishNodeCol];
-        const visitedNodesInOrder = astar(grid, startNode, finishNode);
-        const nodesInShortestPathOrder = getNodesInShortestPathOrderAstar(
+        
+        astar(grid, startNode, finishNode);
+        getNodesInShortestPathOrderAstar(
           finishNode
         );
         const end = performance.now();
         console.log(`Call to doSomething took ${end - start} milliseconds.`);
-        this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
+        time += end - start;
+        
+        //this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
       //}, this.state.speed);
+      this.setState({visualizingAlgorithm: false});
     }
+    //console.log(time/100);
     
   }
+  benchMarkAStart(){
+    suite
+      .add('A-Star', function (){
+            //const processed = this.visualizeAStar();
+      })
+      .on('cycle', function(event){
+        //const benchmark = event.target;
 
+        //console.log(benchmark.toString());
+      })
+      .on('complete', function(event){
+        const suite = event.currentTarget;
+        const fastestOption = suite.filter('fastest').map('name');
+
+        console.log(`The fastest option is ${fastestOption}`);
+      })
+    .run();
+  }
   visualizeBFS() {
     if (this.state.visualizingAlgorithm || this.state.generatingMaze) {
       return;
@@ -485,6 +511,7 @@ class PathfindingVisualizer extends Component {
           generatingMaze={this.state.generatingMaze}
           visualizeDijkstra={this.visualizeDijkstra.bind(this)}
           visualizeAStar={this.visualizeAStar.bind(this)}
+          //visualizeAStar = {this.benchMarkAStart.bind(this)}
           visualizeGreedyBFS={this.visualizeGreedyBFS.bind(this)}
           visualizeBidirectionalGreedySearch={this.visualizeBidirectionalGreedySearch.bind(
             this
