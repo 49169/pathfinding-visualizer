@@ -286,26 +286,26 @@ class PathfindingVisualizer extends Component {
     const { grid } = this.state;
         const startNode = grid[startNodeRow][startNodeCol];
         const finishNode = grid[finishNodeRow][finishNodeCol];
-    for(var trial = 0; trial <100 ; trial++){
+    //for(var trial = 0; trial <100 ; trial++){
       if (this.state.visualizingAlgorithm || this.state.generatingMaze) {
         return;
       }
-      this.setState({ visualizingAlgorithm: true });
+      //this.setState({ visualizingAlgorithm: true });
       //setTimeout(() => {
         const start = performance.now();
         
         astar(grid, startNode, finishNode);
-        getNodesInShortestPathOrderAstar(
-          finishNode
-        );
+        //getNodesInShortestPathOrderAstar(
+        //  finishNode
+        //);
         const end = performance.now();
         console.log(`Call to doSomething took ${end - start} milliseconds.`);
         time += end - start;
         
         //this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
       //}, this.state.speed);
-      this.setState({visualizingAlgorithm: false});
-    }
+      //this.setState({visualizingAlgorithm: false});
+    //}
     //console.log(time/100);
     
   }
